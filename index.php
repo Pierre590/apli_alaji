@@ -10,6 +10,8 @@ const coefo2 = 0.11;
 const coefo3 = 0.48;
 const coefo4 = 0.66;
 
+
+
 define('USER_ID', $_GET['id']);//pr l'avoir ds l'url
 
 $donnees = file_get_contents(BASE_URL. 'core_user_get_users&criteria[0][key]=id&criteria[0][value]='.USER_ID);
@@ -54,8 +56,12 @@ if ($isPost) {
     $question3 = $reponse[2];
     $question4 = $reponse[3];
     //recuperation de l'ecrit
+
 }
- ?>
+
+$donnees = file_get_contents(BASE_URL.'core_enrol_get_enrolled_users&courseid=41');
+$all_users = json_decode($donnees, true);
+?>
 
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
@@ -68,7 +74,7 @@ if ($isPost) {
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="index.php">Alaji</a>
+            <a class="navbar-brand" href="acceuil.php">Alaji</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -77,8 +83,8 @@ if ($isPost) {
                 Candidats :
                 </div>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <?php foreach ($users as $value){ ?>
-                        <a class="dropdown-item" href="#"><?php echo $value ['users']?></a>
+                    <?php foreach ($all_users as $value){ ?>
+                        <a class="dropdown-item" href="./index.php?id=<?php echo $value['id'];?>"><?php echo $value['fullname'];?></a>
                     <?php } ?>
                 </div>
             </div>
