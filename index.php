@@ -1,27 +1,5 @@
 <?php
-define('USER_ID', $_GET['id']);//pr l'avoir ds l'url
-require 'test.php';
-
-if (isset($_POST['questionO1']) && ($_POST['questionO1'] === '0' || $_POST['questionO1'] === '1')) {
-    $questionO1 = (int) $_POST['questionO1'];
-    $questionO1 = $questionO1 ? 1 : 0;
-}
-
-if (isset($_POST['questionO2']) && ($_POST['questionO2'] === '0' || $_POST['questionO2'] === '1')) {
-    $questionO2 = (int) $_POST['questionO2'];
-    $questionO2 = $questionO2 ? 1 : 0;
-}
-
-if (isset($_POST['questionO3']) && ($_POST['questionO3'] === '0' || $_POST['questionO3'] === '1')) {
-    $questionO3 = (int) $_POST['questionO3'];
-    $questionO3 = $questionO3 ? 1 : 0;
-}
-
-if (isset($_POST['questionO4']) && ($_POST['questionO4'] === '0' || $_POST['questionO4'] === '1')) {
-    $questionO4 = (int) $_POST['questionO4'];
-    $questionO4 = $questionO4 ? 1 : 0;
-}
-
+const BASE_URL = 'http://e-learning.alaji.fr/webservice/rest/server.php?moodlewsrestformat=json&wstoken=92e270ed7da760d3d6df191e5582337b&wsfunction=';
 const coefe1 = 0.23;
 const coefe2 = 0.89;
 const coefe3 = 0.52;
@@ -32,6 +10,51 @@ const coefo2 = 0.11;
 const coefo3 = 0.48;
 const coefo4 = 0.66;
 
+define('USER_ID', $_GET['id']);//pr l'avoir ds l'url
+
+$donnees = file_get_contents(BASE_URL. 'core_user_get_users&criteria[0][key]=id&criteria[0][value]='.USER_ID);
+$student = json_decode($donnees, true);
+
+$isPost = count($_POST);
+//condition du post
+if ($isPost) {
+    if (isset($_POST['questionO1']) && ($_POST['questionO1'] === '0' || $_POST['questionO1'] === '1')) {
+        $questionO1 = (int) $_POST['questionO1'];
+        $questionO1 = $questionO1 ? 1 : 0;
+    }
+
+    if (isset($_POST['questionO2']) && ($_POST['questionO2'] === '0' || $_POST['questionO2'] === '1')) {
+        $questionO2 = (int) $_POST['questionO2'];
+        $questionO2 = $questionO2 ? 1 : 0;
+    }
+
+    if (isset($_POST['questionO3']) && ($_POST['questionO3'] === '0' || $_POST['questionO3'] === '1')) {
+        $questionO3 = (int) $_POST['questionO3'];
+        $questionO3 = $questionO3 ? 1 : 0;
+    }
+
+    if (isset($_POST['questionO4']) && ($_POST['questionO4'] === '0' || $_POST['questionO4'] === '1')) {
+        $questionO4 = (int) $_POST['questionO4'];
+        $questionO4 = $questionO4 ? 1 : 0;
+    }
+
+    $donnees = file_get_contents(BASE_URL. 'mod_quiz_get_user_attempts&quizid=202&userid='.USER_ID);
+    $essai = json_decode($donnees, true);
+    $nbr_essai = $essai ["attempts"][0];
+    //var_dump ($nbr_essai["attempt"]);
+    //echo ($nbr_essai["attempt"]);
+    //recuperation de l'ecrit
+
+    $donnees = file_get_contents(BASE_URL. 'mod_quiz_get_attempt_review&attemptid='.$nbr_essai['id']);
+    $result = json_decode($donnees, true);
+
+    $reponse = $result ["questions"];
+    $question1 = $reponse[0];
+    $question2 = $reponse[1];
+    $question3 = $reponse[2];
+    $question4 = $reponse[3];
+    //recuperation de l'ecrit
+}
  ?>
 
 <!DOCTYPE html>
@@ -39,7 +62,7 @@ const coefo4 = 0.66;
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no">
-        <link rel="stylesheet" href="https://bootswatch.com/4/solar/bootstrap.min.css">
+        <link rel="stylesheet" href="https://bootswatch.com/4/flatly/bootstrap.min.css">
         <link rel="stylesheet" href="style.css">
         <title></title>
     </head>
@@ -49,6 +72,16 @@ const coefo4 = 0.66;
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="dropdown">
+                <div class=" dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Candidats :
+                </div>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <?php foreach ($users as $value){ ?>
+                        <a class="dropdown-item" href="#"><?php echo $value ['users']?></a>
+                    <?php } ?>
+                </div>
+            </div>
             <div class="collapse navbar-collapse" id="navbarColor02">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
@@ -62,27 +95,29 @@ const coefo4 = 0.66;
         </nav>
         <div class="container">
             <blockquote class="blockquote mt-4"style="float:right;">
-                <span class="badge badge-pill badge-primary"><h1><?php echo ($student['users'][0]["fullname"]); ?></span></h1>
+                <span class="badge badge-pill badge-warning"><h1><?php echo ($student['users'][0]["fullname"]); ?></span></h1>
             </blockquote>
-            <div class="card text-white bg-secondary mb-3 mt-3" style="max-width: 20rem;">
-                <div class="card-header"><h2>TEST ORAL</h2></div>
-                <div class="card-body text-center">
-                    <form method="post">
-                        <div class="form-group text-center">
-                            critére 1 :
-                            <input type="number" name="questionO1" min="0" max="1" required/><br>
-                            critére 2 :
-                            <input type="number" name="questionO2" min="0" max="1" required/><br>
-                            critére 3 :
-                            <input type="number" name="questionO3" min="0" max="1" required/><br>
-                            critére 4 :
-                            <input type="number" name="questionO4" min="0" max="1" required/><br>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="float:right;">Valider</button>
-                    </form>
+            <?php if (!$isPost) { ?>
+                <div class="card text-white bg-secondary mb-3 mt-3" style="max-width: 20rem;">
+                    <div class="card-header"><h2>TEST ORAL</h2></div>
+                    <div class="card-body text-center">
+                        <form method="post">
+                            <div class="form-group text-center">
+                                critére 1 :
+                                <input type="number" name="questionO1" min="0" max="1" required/><br>
+                                critére 2 :
+                                <input type="number" name="questionO2" min="0" max="1" required/><br>
+                                critére 3 :
+                                <input type="number" name="questionO3" min="0" max="1" required/><br>
+                                critére 4 :
+                                <input type="number" name="questionO4" min="0" max="1" required/><br>
+                            </div>
+                            <button type="submit" class="btn btn-warning" style="float:right;">Valider</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <table class="table table-dark mt-4 text-center" id="oral" >
+            <?php } else { ?>
+                <table class="table table-dark mt-4 text-center" id="oral" >
                 <thead>
                     <tr>
                         <th scope="col">Critères</th>
@@ -128,7 +163,7 @@ const coefo4 = 0.66;
                     </tr>
                 </tbody>
             </table>
-            <td></td>
+            <?php } ?>
             <div class="logo">
                 <img src="alaji.png" alt="logo alaji">
             </div>

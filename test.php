@@ -52,6 +52,11 @@ $question3 = $reponse[2];
 $question4 = $reponse[3];
 //echo ($question1 ["mark"]);
 
+const BASE_URL = 'http://e-learning.alaji.fr/webservice/rest/server.php?moodlewsrestformat=json&wstoken=92e270ed7da760d3d6df191e5582337b&wsfunction=';
+
+$donnees = file_get_contents(BASE_URL. 'core_user_get_users&criteria[0][key]=id&criteria[0][value]=240');
+$students = json_decode($donnees, true);
+var_dump ($students);
 
 
 

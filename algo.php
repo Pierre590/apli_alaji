@@ -64,4 +64,12 @@ echo $r4;
 if ($r4 > 0.5){echo 'admis';}else{echo 'non admis';}
 echo '<br>';
 
+
+
+
+
+
+
+
+
 ?>
